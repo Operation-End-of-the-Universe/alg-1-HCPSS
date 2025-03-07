@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algebra 1 Calculator and Graphing Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #f0f8ff; /* Light blue background */
+        }
+        canvas {
+            border: 1px solid black;
+            margin-top: 20px;
+            background-color: #ffffff; /* White background for the canvas */
+        }
+        input, button {
+            margin: 5px;
+        }
+        h1, h2 {
+            color: #333; /* Darker text for better readability */
+        }
+    </style>
+</head>
+<body>
+    <h1>Algebra 1 Calculator and Graphing Tool</h1>
+
+    <h2>Calculator</h2>
+    <input type="text" id="calcInput" placeholder="Enter expression (e.g. 2 + 3)">
+    <button onclick="calculate()">Calculate</button>
+    <p id="calcResult"></p>
+
+    <h2>Graphing Tool</h2>
+    <p>Enter a linear equation in the form y = mx + b</p>
+    <input type="text" id="equation" placeholder="e.g. y = 2x + 1">
+    <button onclick="drawGraph()">Graph</button>
+    <canvas id="graphCanvas" width="400" height="400"></canvas>
+
+    <script>
+        // Calculator Functionality
+        function calculate() {
+            const input = document.getElementById('calcInput').value;
+            let result;
+            try {
+                result = eval(input);
+                document.getElementById('calcResult').innerText = `Result: ${result}`;
+            } catch (error) {
+                document.getElementById('calcResult').innerText = 'Error: Invalid expression';
+            }
+        }
+
+        // Graphing Functionality
+        function drawGraph() {
+            const canvas = document.getElementById('graphCanvas');
+            const ctx = canvas.getContext('2d');
+            const equation = document.getElementById('equation').value;
+
+            // Clear the canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+
+            // Draw axes
+            ctx.moveTo(0, canvas.height / 2);
+            ctx.lineTo(canvas.width, canvas.height / 2);
+            ctx.moveTo(canvas.width / 2, 0);
+            ctx.lineTo(canvas.width / 2, canvas.height);
+            ctx.strokeStyle = 'black';
+            ctx.stroke();
+
+            // Draw tick marks
+            const tickSpacing = 20; // Spacing between tick marks
+            for (let i = 0; i <= canvas.width; i += tickSpacing) {
+                ctx.moveTo(i, canvas.height / 2 - 5);
+                ctx.lineTo(i, canvas.height / 2 + 5); // X-axis ticks
+                ctx.moveTo(canvas.width / 2 - 5, i);
+                ctx.lineTo(canvas.width / 2 + 5, i); // Y-axis ticks
+            }
+            ctx.strokeStyle = 'lightgray'; // Color for tick marks
+            ctx.stroke();
+
+            // Parse the equation
+            const regex = /y\s*=\s*([-\d.]+)x\s*([+-]\s*\d+)?/;
+            const match = equation.replace(/\s+/g, '').match(regex);
+
+            if (match) {
+                const m = parseFloat(match[1]);
+                const b = match[2] ? parseFloat(match[2].replace(/\s+/g, '')) : 0;
+
+                // Draw the line
+                ctx.beginPath();
+                for (let x = -canvas.width / 2; x <= canvas.width / 2; x++) {
+                    const y = m * x + b;
+                    const canvasX = x + canvas.width / 2;
+                    const canvasY = -y + canvas.height / 2; // Invert y for canvas
+                    ctx.lineTo(canvasX, canvasY);
+                }
+                ctx.strokeStyle = 'red';
+                ctx.stroke();
+            } else {
+                alert('Invalid equation format. Please use "y = mx + b".');
+            }
+        }
+    </script>
+</body>
+</html>
